@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from votes import views
+#이건 왜 빨간줄임?
 
 
 urlpatterns = [  #url 패턴이라는 튜플
