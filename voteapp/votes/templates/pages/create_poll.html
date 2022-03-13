@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>익명 투표 생성하기</title>
+</head>
+<body>
+    <form action="{% url 'create_poll' %}" method="post">
+        {% csrf_token %}
+{#  csrf 란?  보안토큰  장고는 csrf 가없으면 방어로직이 발동   #}
+        {{ create_form.as_p }}
+        <input type="submit" value="생성">
+    </form>
+</body>
+</html>

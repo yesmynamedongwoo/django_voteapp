@@ -1,9 +1,11 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-
+from .forms import PollCreateForm
 
 # import 모듈 안으로 접속속 ctrl + 클릭
 # Create your views here.
+
+
 
 def view_all_polls(request):
     context = {
@@ -17,7 +19,19 @@ def view_all_polls(request):
 
 
 def create_poll(request):
-    return HttpResponse('create')
+    if request.method == 'POST':
+        form = PollCreateForm(request.POST)
+        if form.is_valid(): # is_valid 란?  해당 폼의 clean()을 호출해서 유효성 검사
+            print(form.cleaned_data['topic'])
+            #데이터베이스에 저장하는 로직 추가 필요
+            return HttpResponseRedirect('/polls/')
+    else:
+        form = PollCreateForm()
+    context = {
+        'create_form': form
+    }
+
+    return render(request, 'pages/create_poll.html', context)
 
 
 def view_poll_by_id(request, id):
