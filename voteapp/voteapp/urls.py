@@ -20,11 +20,12 @@ from votes import views
 
 
 urlpatterns = [  #url 패턴이라는 튜플
-    path('polls/', views.view_all_polls),
-    path('polls/create',views.create_poll),
-    path('polls/<int:id>/', views.view_poll_by_id),
-    path('polls/<int:id>/vote', views.vote_poll),
-    path('polls/<int:id>/update/', views.update_poll),
-    path('polls/<int:id>/delete/', views.delete_poll),
+    path('polls/', views.view_all_polls, name='view_all_polls' ),
+    path('polls/create',views.create_poll, name='create_poll'),
+    path('polls/<int:id>/', views.view_poll_by_id,name='view_poll_by_id') ,
+    path('polls/<int:id>/vote', views.vote_poll,name='vote_poll'),
+    path('polls/<int:id>/update/', views.update_poll,name='update_poll'),
+    path('polls/<int:id>/delete/', views.delete_poll,name='delete_poll'),
     # <> 장고에서 경로 파라미터의 시작과 끝  경로에서 저 사이의 값을 인트형으로 변환해 전달   예시 ) <int:id> , <str:id>
+    # name 을 쓰는 이유 name 을 적으면 템플릿코드에서 url 을 불러올수있다 이걸 url 구문이라고한다
 ]
