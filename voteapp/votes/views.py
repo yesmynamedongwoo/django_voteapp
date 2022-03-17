@@ -1,19 +1,18 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from .forms import PollCreateForm
-
+from .models import Topic,Vote,Option
 # import 모듈 안으로 접속속 ctrl + 클릭
 # Create your views here.
 
 
 
 def view_all_polls(request):
+    topics = Topic.objects.all()
     context = {
-      'topics' : [
-          {'id': 1, 'topic': '부먹 vs 찍먹' },
-          {'id': 2, 'topic': '김치찌개 vs 된장찌개'},
-          {'id': 3, 'topic': '커피 vs 차'}
-      ]
+      'topics' : topics
+
+
     }
     return render(request, 'pages/view_all_polls.html', context)
 
@@ -21,9 +20,17 @@ def view_all_polls(request):
 def create_poll(request):
     if request.method == 'POST':
         form = PollCreateForm(request.POST)
-        if form.is_valid(): # is_valid 란?  해당 폼의 clean()을 호출해서 유효성 검사
-            print(form.cleaned_data['topic'])
-            #데이터베이스에 저장하는 로직 추가 필요
+        if form.is_valid():   # is_valid 란?  해당 폼의 clean()을 호출해서 유효성 검사
+            title = form.cleaned_data['topic']
+            options = form.cleaned_data['options'].split(',')
+
+            topic = Topic(title=title)
+            topic.save()
+
+            for item in options:
+                Option.objects.create(name= item, topic=topic)
+
+
             return HttpResponseRedirect('/polls/')
     else:
         form = PollCreateForm()
@@ -35,7 +42,25 @@ def create_poll(request):
 
 
 def view_poll_by_id(request, id):
-    return HttpResponse('view poll ' + str(id))
+    topic = Topic.objects.get(id=id)  # 프라이머리키 id : 변수 id
+    options = Option.objects.filter(topic=topic).all()
+
+    total_votes = Vote.objects.filter(topic=topic).count()  # count(): 레코드의 개수를 반환한다.
+    results = {}
+    for item in options:
+        vote_count = Vote.objects.filter(option=item).count()
+        if total_votes > 0:
+            percent = vote_count / total_votes * 100
+            result_text = " 득표수: %d, 비율: %.2f" % (vote_count, percent)
+        else:
+            result_text = " 투표 없음"
+        results[item.name] = result_text
+    context = {
+        'topic': topic,
+        'results': results
+    }
+
+    return render(request, 'pages/view_poll_by_id.html ', context)
 
 
 def vote_poll(request, id):
